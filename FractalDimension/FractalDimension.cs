@@ -11,7 +11,8 @@ namespace FractalDimension
         public int DeltaMax = 4;
         public int QMin = 1;
         public int QMax = 10;
-        public int LayersCount = 5;
+        public double MFEpsilon = 1E-6;
+        public double AlphaMin, AlphaMax;
         
         public List<Tuple<double, double>> CDPoints { get; private set; }
         public List<Tuple<double, double>> MDPoints { get; private set; }
@@ -24,13 +25,25 @@ namespace FractalDimension
         private delegate float Predicat(float val1, float val2);
         private readonly string LocalDensityImages = "LocalDensityImages";
         private double totalSaturationSum;
-        private List<Tuple<double, double>> AlphaPoints;
+
+        public List<Tuple<double, double>> AlphaGroups { get; private set; }
 
         //----------------------Емкостная размерность для черно-белых изображений----------------------//
         public double CalculateCapacitiveDimension(string imagepath)
         {
-            double result = 0;
             image = new Bitmap(imagepath);
+
+            double result = CalculateCapacitiveDimension();
+
+            image.Dispose();
+
+            return result;
+        }
+
+        private double CalculateCapacitiveDimension()
+        {
+            double result = 0d;
+            
             CDPoints = new List<Tuple<double, double>>();
 
             int epsilon = Math.Min(image.Width, image.Height) / 2;
@@ -42,8 +55,6 @@ namespace FractalDimension
             }
 
             result = GetAproximationByLessSquareMethod(CDPoints);
-
-            image.Dispose();
 
             return result;
         }
@@ -310,15 +321,31 @@ namespace FractalDimension
 
         public void CalculateRenyiSpectre(string imagepath)
         {
-            image = new Bitmap(imagepath);
             SRPoints = new List<Tuple<double, double>>();
             
             for (int q = QMin; q <= QMax; q++)
             {
-                SRPoints.Add(new Tuple<double, double>(q, GetRenyiSpectre(q)));
-            }
+                image = new Bitmap(imagepath);
 
-            image.Dispose();
+                if (q == 0)
+                {
+                    //емкостная
+                    BlackBoundary = 230;
+                    SRPoints.Add(new Tuple<double, double>(q, CalculateCapacitiveDimension()));
+                    BlackBoundary = 100;
+                }
+                else if (q == 1)
+                {
+                    //информационная
+                    SRPoints.Add(new Tuple<double, double>(q, CalculateEntropy()));
+                }
+                else
+                {
+                    SRPoints.Add(new Tuple<double, double>(q, GetRenyiSpectre(q)));
+                }
+
+                image.Dispose();
+            }
         }
 
         private double GetRenyiSpectre(int q)
@@ -343,7 +370,22 @@ namespace FractalDimension
         {
             double result = 0d;
 
-            List<double> saturationSumInCell = new List<double>(); 
+            GetSaturatutionSumList(epsilon, out List<Double> saturationSumInCells);
+
+            double saturationSums = GetSum(ref saturationSumInCells);
+
+            foreach (double sum in saturationSumInCells)
+            {
+                double pi = sum / saturationSums;
+                result += Math.Pow( pi, (double)q);
+            }
+
+            return result;
+        }
+
+        private void GetSaturatutionSumList(int epsilon, out List<Double> saturationSumInCells)
+        {
+            saturationSumInCells = new List<double>();
 
             for (int x = 0; x <= image.Width; x += epsilon)
             {
@@ -362,19 +404,9 @@ namespace FractalDimension
                     int y1 = y + epsilon;
 
                     //для каждой ячейки
-                    saturationSumInCell.Add(GetSaturationSumInCell(x, x1, y, y1));
+                    saturationSumInCells.Add(GetSaturationSumInCell(x, x1, y, y1));
                 }
             }
-
-            double saturationSums = GetSum(ref saturationSumInCell);
-
-            foreach (double sum in saturationSumInCell)
-            {
-                double pi = sum / saturationSums;
-                result += Math.Pow( pi, (double)q);
-            }
-
-            return result;
         }
 
         private double GetSaturationSumInCell(int xStart, int xEnd, int yStart, int yEnd)
@@ -407,10 +439,18 @@ namespace FractalDimension
         //----------------------Мультифрактальный спектр для полутоновых----------------------//
         //--------------------с использованием локальной функции плотности--------------------//
 
-        public void CalculateMultufractalWithLocalDensityFunction(string imagepath)
+        public void PrecalculateAlpaMinAlpaMax(string imagepath)
         {
             image = new Bitmap(imagepath);
 
+            //заранее высчитываем полную сумму насыщенности всех пикселей картинки
+            totalSaturationSum = GetSaturationSumInCell(0, image.Width, 0, image.Height);
+
+            CalculateAlphaMinAlphaMax(out AlphaMin, out AlphaMax);
+        }
+
+        public void CalculateMultufractalWithLocalDensityFunction()
+        {
             PrepareFolderForImages();
 
             CalculateMultifractalDimension();
@@ -437,7 +477,7 @@ namespace FractalDimension
 
         private void CalculateMultifractalDimension()
         {
-            CalculateAlphaPoints();
+            CalculateAlphaGroups();
 
             MFPoints = new List<Tuple<Tuple<double, double>, double>>();
             int index = 0;
@@ -447,24 +487,18 @@ namespace FractalDimension
                 //считаем емкостную размерность
                 double CD = CalculateCapacitiveDimension(file);
 
-                MFPoints.Add(new Tuple<Tuple<double, double>, double>(AlphaPoints[index], CD));
+                MFPoints.Add(new Tuple<Tuple<double, double>, double>(AlphaGroups[index], CD));
 
                 index++;
             }
         }
 
-        private void CalculateAlphaPoints()
+        private void CalculateAlphaGroups()
         {
-            AlphaPoints = new List<Tuple<double, double>>();
-
-            //заранее высчитываем полную сумму насыщенности всех пикселей картинки
-            totalSaturationSum = GetSaturationSumInCell(0, image.Width, 0, image.Height);
-
-            //высчитываем шаг и заодно получаем максимальное и минимальное значение меры ячейки
-            double eps = CalculateEpsilon(out double alphaMin, out double alphaMax);
+            AlphaGroups = new List<Tuple<double, double>>();
 
             int imageIndex = 1;
-            for (double alpha = alphaMin; alphaMax - alpha >= 1.0E-6; alpha += eps, imageIndex++)
+            for (double alpha = AlphaMin; AlphaMax - alpha >= 1.0E-6; alpha += MFEpsilon, imageIndex++)
             {
                 Bitmap layerImage = new Bitmap(image.Width, image.Height);
 
@@ -475,7 +509,7 @@ namespace FractalDimension
                     {
                         double currentAlpha = CalculateAlpha(x, y);
 
-                        if (currentAlpha >= alpha && currentAlpha < alpha + eps)
+                        if (currentAlpha >= alpha && currentAlpha < alpha + MFEpsilon)
                         {
                             layerImage.SetPixel(x, y, Color.Black);
                         }
@@ -491,11 +525,11 @@ namespace FractalDimension
                 layerImage.Save(filename, System.Drawing.Imaging.ImageFormat.Bmp);
 
                 //сохраняем AlphaPoints значения [alpha; alpha+eps), а второй double пока назначаем 0d
-                AlphaPoints.Add(new Tuple<double, double>(alpha, alpha + eps));
+                AlphaGroups.Add(new Tuple<double, double>(alpha, alpha + MFEpsilon > AlphaMax ? AlphaMax : alpha + MFEpsilon));
             }
         }
 
-        private double CalculateEpsilon(out double alphaMin, out double alphaMax)
+        private void CalculateAlphaMinAlphaMax(out double alphaMin, out double alphaMax)
         {
             SortedSet<double> result = new SortedSet<double>();
 
@@ -510,13 +544,48 @@ namespace FractalDimension
 
             alphaMin = result.Min;
             alphaMax = result.Max;
-
-            return (alphaMax - alphaMin) / LayersCount;
         }
 
         private double CalculateAlpha(int x, int y)
         {
             return image.GetPixel(x, y).GetSaturation() / totalSaturationSum;
-        } 
+        }
+
+        //----------------------Информационная размерность----------------------//
+
+        private double CalculateEntropy()
+        {
+            List<Tuple<double, double>> points = new List<Tuple<double, double>>();
+            int epsilon = Math.Min(image.Width, image.Height) / 2;
+
+            while (epsilon > 1)
+            {
+                double sumP = GetSumOfStandardizedMeasuresForEntropy(epsilon);
+                points.Add(new Tuple<double, double>(Math.Log(epsilon), sumP));
+
+                epsilon /= 2;
+            }
+
+            double result = GetAproximationByLessSquareMethod(points);
+
+            return result;
+        }
+
+        private double GetSumOfStandardizedMeasuresForEntropy(int epsilon)
+        {
+            double result = 0d;
+
+            GetSaturatutionSumList(epsilon, out List<Double> saturationSumInCell);
+
+            double saturationSums = GetSum(ref saturationSumInCell);
+
+            foreach (double sum in saturationSumInCell)
+            {
+                double pi = sum / saturationSums;
+                result += pi * Math.Log(pi);
+            }
+
+            return result;
+        }
     }
 }

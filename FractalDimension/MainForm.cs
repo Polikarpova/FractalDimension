@@ -128,20 +128,30 @@ namespace FractalDimension
             graphForm.DrawRelation(fdc.SRPoints, "График зависимости D(q) от значения q", "D(q)", "q");
             graphForm.Show();
         }
+        
+        private void MFPrecalculateButton_Click(object sender, EventArgs e)
+        {
+            fdc.PrecalculateAlpaMinAlpaMax(imageFilepath);
+
+            alphaMinText.Text = String.Format("{0} * E-5", Math.Round(fdc.AlphaMin * 1E+5, 3));
+            alphaMaxText.Text = String.Format("{0} * E-5", Math.Round(fdc.AlphaMax * 1E+5, 3));
+
+            EpsilonInput.Enabled = MFCalculateButton.Enabled = true;
+        }
 
         private void MFCalculateButton_Click(object sender, EventArgs e)
         {
-            fdc.LayersCount = (int) MFLayersInput.Value;
+            fdc.MFEpsilon = (double) EpsilonInput.Value;
 
-            fdc.CalculateMultufractalWithLocalDensityFunction(imageFilepath);
+            fdc.CalculateMultufractalWithLocalDensityFunction();
 
             //рисуем график
             GraphForm graphForm = new GraphForm();
-            graphForm.DrawLayers(fdc.MFPoints, "Гистограмма спектров", "Емкостная размерность", "Диапозоны alpha");
+            graphForm.DrawLayers(fdc.MFPoints, "Гистограмма спектров", "Емкостная размерность", "Диапазоны alpha (*E-5)");
             graphForm.Show();
 
             //получаем сформированные картинки
-            SubsetsForm subsetsForm = new SubsetsForm(fdc.LocalDensityImagesDirectory);
+            SubsetsForm subsetsForm = new SubsetsForm(fdc.LocalDensityImagesDirectory, fdc.AlphaGroups);
             subsetsForm.Show();
         }
     }

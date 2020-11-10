@@ -36,16 +36,16 @@
             this.FlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.FlowLayoutPanel.Name = "FlowLayoutPanel";
-            this.FlowLayoutPanel.Size = new System.Drawing.Size(1182, 553);
+            this.FlowLayoutPanel.Size = new System.Drawing.Size(1182, 593);
             this.FlowLayoutPanel.TabIndex = 0;
             // 
             // SubsetsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1182, 553);
+            this.ClientSize = new System.Drawing.Size(1182, 593);
             this.Controls.Add(this.FlowLayoutPanel);
-            this.MinimumSize = new System.Drawing.Size(1200, 600);
+            this.MinimumSize = new System.Drawing.Size(1200, 640);
             this.Name = "SubsetsForm";
             this.Text = "Разделение на подмножества";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SubsetsForm_FormClosed);

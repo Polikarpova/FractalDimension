@@ -105,7 +105,7 @@ namespace FractalDimension
             {
                 list.Add(point.Item1.Item1, point.Item2);
 
-                names[i] = String.Format("{0}E-5 - {1}E-5 ", Math.Round(point.Item1.Item1 * 1E+5, 3), Math.Round(point.Item1.Item2 * 1E+5, 3)); ;
+                names[i] = String.Format("от {0} до {1} ", Math.Round(point.Item1.Item1 * 1E+5, 3), Math.Round(point.Item1.Item2 * 1E+5, 3));
                 i++;
             }
 

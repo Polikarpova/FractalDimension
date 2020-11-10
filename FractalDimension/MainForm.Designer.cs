@@ -52,9 +52,13 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.MFPanel = new System.Windows.Forms.Panel();
-            this.MFCalculateButton = new System.Windows.Forms.Button();
+            this.EpsilonInput = new System.Windows.Forms.NumericUpDown();
+            this.MFPrecalculateButton = new System.Windows.Forms.Button();
+            this.alphaMaxText = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.alphaMinText = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
-            this.MFLayersInput = new System.Windows.Forms.NumericUpDown();
+            this.MFCalculateButton = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.CDPanel.SuspendLayout();
@@ -66,7 +70,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.QMaxInput)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.QMinInput)).BeginInit();
             this.MFPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.MFLayersInput)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EpsilonInput)).BeginInit();
             this.SuspendLayout();
             // 
             // LoadImageButton
@@ -248,7 +252,7 @@
             this.ImageBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ImageBox.Location = new System.Drawing.Point(348, 2);
             this.ImageBox.Name = "ImageBox";
-            this.ImageBox.Size = new System.Drawing.Size(605, 613);
+            this.ImageBox.Size = new System.Drawing.Size(605, 694);
             this.ImageBox.TabIndex = 5;
             this.ImageBox.TabStop = false;
             // 
@@ -302,19 +306,9 @@
             0,
             0,
             0});
-            this.QMinInput.Minimum = new decimal(new int[] {
-            2,
-            0,
-            0,
-            0});
             this.QMinInput.Name = "QMinInput";
             this.QMinInput.Size = new System.Drawing.Size(108, 22);
             this.QMinInput.TabIndex = 7;
-            this.QMinInput.Value = new decimal(new int[] {
-            2,
-            0,
-            0,
-            0});
             this.QMinInput.ValueChanged += new System.EventHandler(this.QMinInput_ValueChanged);
             // 
             // label7
@@ -347,19 +341,97 @@
             // MFPanel
             // 
             this.MFPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.MFPanel.Controls.Add(this.MFCalculateButton);
+            this.MFPanel.Controls.Add(this.EpsilonInput);
+            this.MFPanel.Controls.Add(this.MFPrecalculateButton);
+            this.MFPanel.Controls.Add(this.alphaMaxText);
+            this.MFPanel.Controls.Add(this.label11);
+            this.MFPanel.Controls.Add(this.alphaMinText);
             this.MFPanel.Controls.Add(this.label10);
-            this.MFPanel.Controls.Add(this.MFLayersInput);
+            this.MFPanel.Controls.Add(this.MFCalculateButton);
             this.MFPanel.Controls.Add(this.label9);
             this.MFPanel.Controls.Add(this.label8);
             this.MFPanel.Location = new System.Drawing.Point(3, 500);
             this.MFPanel.Name = "MFPanel";
-            this.MFPanel.Size = new System.Drawing.Size(342, 115);
+            this.MFPanel.Size = new System.Drawing.Size(342, 196);
             this.MFPanel.TabIndex = 7;
+            // 
+            // EpsilonInput
+            // 
+            this.EpsilonInput.DecimalPlaces = 6;
+            this.EpsilonInput.Enabled = false;
+            this.EpsilonInput.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            393216});
+            this.EpsilonInput.Location = new System.Drawing.Point(116, 123);
+            this.EpsilonInput.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.EpsilonInput.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            327680});
+            this.EpsilonInput.Name = "EpsilonInput";
+            this.EpsilonInput.Size = new System.Drawing.Size(221, 22);
+            this.EpsilonInput.TabIndex = 8;
+            this.EpsilonInput.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            327680});
+            // 
+            // MFPrecalculateButton
+            // 
+            this.MFPrecalculateButton.Location = new System.Drawing.Point(3, 76);
+            this.MFPrecalculateButton.Name = "MFPrecalculateButton";
+            this.MFPrecalculateButton.Size = new System.Drawing.Size(334, 33);
+            this.MFPrecalculateButton.TabIndex = 10;
+            this.MFPrecalculateButton.Text = "Рассчитать границы [alphaMin; alphaMax]";
+            this.MFPrecalculateButton.UseVisualStyleBackColor = true;
+            this.MFPrecalculateButton.Click += new System.EventHandler(this.MFPrecalculateButton_Click);
+            // 
+            // alphaMaxText
+            // 
+            this.alphaMaxText.Location = new System.Drawing.Point(204, 41);
+            this.alphaMaxText.Name = "alphaMaxText";
+            this.alphaMaxText.ReadOnly = true;
+            this.alphaMaxText.Size = new System.Drawing.Size(133, 22);
+            this.alphaMaxText.TabIndex = 8;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(165, 44);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(33, 17);
+            this.label11.TabIndex = 8;
+            this.label11.Text = "Max";
+            // 
+            // alphaMinText
+            // 
+            this.alphaMinText.Location = new System.Drawing.Point(30, 41);
+            this.alphaMinText.Name = "alphaMinText";
+            this.alphaMinText.ReadOnly = true;
+            this.alphaMinText.Size = new System.Drawing.Size(129, 22);
+            this.alphaMinText.TabIndex = 8;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(3, 44);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(30, 17);
+            this.label10.TabIndex = 8;
+            this.label10.Text = "Min";
             // 
             // MFCalculateButton
             // 
-            this.MFCalculateButton.Location = new System.Drawing.Point(3, 75);
+            this.MFCalculateButton.Enabled = false;
+            this.MFCalculateButton.Location = new System.Drawing.Point(3, 158);
             this.MFCalculateButton.Name = "MFCalculateButton";
             this.MFCalculateButton.Size = new System.Drawing.Size(334, 33);
             this.MFCalculateButton.TabIndex = 8;
@@ -367,40 +439,14 @@
             this.MFCalculateButton.UseVisualStyleBackColor = true;
             this.MFCalculateButton.Click += new System.EventHandler(this.MFCalculateButton_Click);
             // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(242, 44);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(95, 17);
-            this.label10.TabIndex = 8;
-            this.label10.Text = "подмножеств";
-            // 
-            // MFLayersInput
-            // 
-            this.MFLayersInput.Location = new System.Drawing.Point(109, 42);
-            this.MFLayersInput.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.MFLayersInput.Name = "MFLayersInput";
-            this.MFLayersInput.Size = new System.Drawing.Size(127, 22);
-            this.MFLayersInput.TabIndex = 8;
-            this.MFLayersInput.Value = new decimal(new int[] {
-            4,
-            0,
-            0,
-            0});
-            // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(3, 44);
+            this.label9.Location = new System.Drawing.Point(3, 125);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(100, 17);
+            this.label9.Size = new System.Drawing.Size(107, 17);
             this.label9.TabIndex = 9;
-            this.label9.Text = "Разбиение на";
+            this.label9.Text = "Шаг разбиения";
             // 
             // label8
             // 
@@ -415,7 +461,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(956, 627);
+            this.ClientSize = new System.Drawing.Size(956, 708);
             this.Controls.Add(this.MFPanel);
             this.Controls.Add(this.SRPanel);
             this.Controls.Add(this.LoadImageButton);
@@ -424,7 +470,7 @@
             this.Controls.Add(this.CDPanel);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(974, 674);
+            this.MinimumSize = new System.Drawing.Size(974, 755);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Рассчет фрактальной размерности";
@@ -441,7 +487,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.QMinInput)).EndInit();
             this.MFPanel.ResumeLayout(false);
             this.MFPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.MFLayersInput)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.EpsilonInput)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -473,10 +519,14 @@
         private System.Windows.Forms.Button SRCalculateButton;
         private System.Windows.Forms.Panel MFPanel;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.NumericUpDown MFLayersInput;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Button MFCalculateButton;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox alphaMinText;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox alphaMaxText;
+        private System.Windows.Forms.Button MFPrecalculateButton;
+        private System.Windows.Forms.NumericUpDown EpsilonInput;
     }
 }
 
